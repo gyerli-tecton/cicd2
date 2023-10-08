@@ -4,32 +4,37 @@ on:
   push:
     branches:
       - dev
-      - stage
   pull_request:
+    types: [closed]
+    branches:
+      - stage
+  pull_request_review:
+    types: [submitted]
     branches:
       - stage
 
 jobs:
   plan:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.ref == 'refs/heads/stage')
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Run Plan Job
-      run: |
-        echo "Running Plan Job"
-        # Add your 'plan' job steps or script here
+      - name: Run Plan Job
+        run: |
+          echo "Running Plan Job"
+          # Add actual plan job commands or scripts here
 
   apply:
+    if: github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request_review' && github.ref == 'refs/heads/stage' && github.event.review.state == 'approved') || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
     needs: plan
-    if: github.ref == 'refs/heads/dev' || (github.ref == 'refs/heads/stage' && github.event_name == 'push')
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Run Apply Job
-      run: |
-        echo "Running Apply Job"
-        # Add your 'apply' job steps or script here
+      - name: Run Apply Job
+        run: |
+          echo "Running Apply Job"
+          # Add actual apply job commands or scripts here
