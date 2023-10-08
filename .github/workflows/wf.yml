@@ -1,0 +1,35 @@
+name: Tecton CI/CD - 2
+
+on:
+  push:
+    branches:
+      - dev
+      - stage
+  pull_request:
+    branches:
+      - stage
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run Plan Job
+      run: |
+        echo "Running Plan Job"
+        # Add your 'plan' job steps or script here
+
+  apply:
+    needs: plan
+    if: github.ref == 'refs/heads/dev' || (github.ref == 'refs/heads/stage' && github.event_name == 'push')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run Apply Job
+      run: |
+        echo "Running Apply Job"
+        # Add your 'apply' job steps or script here
